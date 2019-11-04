@@ -62,6 +62,38 @@ size_t Network::random_connect(const double &mean_deg, const double &mean_streng
     return num_links;
 }
 
+std::pair<size_t, double> Network::degree(const size_t& n) const
+{
+	size_t c(0);
+	double s(0.0);
+	for (size_t i(0); i<neurons.size(); ++i) {
+		const std::pair<size_t, size_t> a(n, i);
+		if (links.find(a) != links.end()) {
+			c+=1;
+			s+=links.at(a); //ou tmp?? pointeur idk
+		}
+		const std::pair<size_t, size_t> b(i, n);
+		if (links.find(b) != links.end()) {
+			c+=1;
+			s+=links.at(b);
+		}
+	}
+	 std::pair<size_t, double> deg(c, s);
+	 return deg;	
+}
+
+std::vector<std::pair<size_t, double> > Network::neighbors(const size_t& n) const
+{
+	std::vector<std::pair<size_t, double> > ret;
+	for (size_t i(0); i<neurons.size(); ++i) {
+		std::pair<size_t, size_t> a(n, i);
+		if (links.find(a) != links.end()) {
+			ret.push_back({i, links.at(a)});
+		}
+	}
+	return ret;
+}
+
 std::vector<double> Network::potentials() const {
     std::vector<double> vals;
     for (size_t nn=0; nn<size(); nn++)
@@ -74,6 +106,37 @@ std::vector<double> Network::recoveries() const {
     for (size_t nn=0; nn<size(); nn++)
         vals.push_back(neurons[nn].recovery());
     return vals;
+}
+
+std::set<size_t> Network::step(const std::vector<double>& vec)
+{
+	std::set<size_t> ret;
+	for (size_t i(0); i<neurons.size(); ++i) {
+		neurons[i].step();
+		if (neurons[i].firing()) {
+			double input(vec[i]);
+			if (neurons[i].is_inhibitory()) {
+				input *= 2;
+			} else {
+				input *= 5;
+			}
+			for (size_t j(0); j<neurons.size(); ++j) {
+				if (j!=i) {
+					if (neurons[j].firing()) { //we don't need to differentiate btw inhib and stim bc in add_link we multiply by -2 if inhib. 
+						if (neurons[j].is_inhibitory()) {
+							input -= links.at({j, i});
+						} else {
+							input += links.at({j, i}) *0.5;
+						}
+					}
+				}
+			}	
+			ret.insert(i);
+			neurons[i].input(input);
+			neurons[i].reset();
+		}
+	}
+	return ret;
 }
 
 void Network::print_params(std::ostream *_out) {

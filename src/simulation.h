@@ -1,3 +1,6 @@
+#ifndef SIMULATION_H
+#define SIMULATION_H
+
 #include "network.h"
 #include <tclap/CmdLine.h>
 
@@ -6,7 +9,6 @@
   It manages user inputs, defines the simulation parameters and constructs the \ref Network \ref net.
   It then runs the simulation and prints the results to the output streams.
   These streams can be files with names based on the string \ref output with a suffix.
-
   Simulation parameters:
   - \ref endtime : total number of time-steps,
   - \ref size : total number of neurons,
@@ -14,7 +16,6 @@
   - \ref thalam : st. dev. of thalamic input (for excitatory neurons),
   - \ref streng : average intensity of connections, 
   - \ref inhib : fraction of inhibitory neurons in the network, 
-
   The map \ref ntypes describes the neuron population: 
   its keys are the neuron types from \ref Neuron::NeuronTypes and values are the corresponding counts.
  */
@@ -78,3 +79,4 @@ private:
     std::map< std::string, size_t > ntypes; 
 };
 
+#endif
