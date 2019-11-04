@@ -1,28 +1,26 @@
+#ifndef NETWORK_H
+#define NETWORK_H
+
 #include "globals.h"
 #include "neuron.h"
 
 /*! \class Network
   A neuron network is a \ref neurons "set" of neurons and a \ref links "set" of directional links between them.
-
   Neurons are objects of class Neuron (they are identified by their index in the vector \ref neurons).
   A link is an ordered pair of indices in \ref neurons with an intensity value, 
   collected in a \ref linkmap. This is a [std::map](https://en.cppreference.com/w/cpp/container/map) 
   therefore only one connection can exist between two neurons. 
-
   To create a network, you need to \ref resize it and optionally \ref set_default_params for each neuron. 
   Then you can either call \ref add_link for each connection or generate a random network with \ref random_connect.
-
   The dynamics of the network proceeds by calling \ref step. 
   The state of the network can be printed to output streams with \ref print_params (to print all parameters of all neurons), \ref print_traj to print the full state of one neuron of each type. 
   The helper function \ref print_head will print a header line with the variable names for the the \ref print_traj lines.
-
   This class provides accessors to the following Neuron properties
   - \ref degree : returns the degree of a neuron (number of incoming connections) and valence (sum of weights of these links)
   - \ref neighbors : returns the indices of neurons with incoming links to a given neuron,
   - \ref potentials : returns the values of membrane potentials for all neurons,
   - \ref recoveries : returns the values of recovery variables for all neurons,
   - \ref neuron : returns a const reference to a given neuron object.
-
  */
 
 typedef std::map<std::pair<size_t, size_t>, double> linkmap;
@@ -73,36 +71,76 @@ public:
   \return the number of links created.
  */
     size_t random_connect(const double&, const double &s=_STRENG_);
+/*!
+  Calculates the number of neurons in the network. 
+  \return the number of neurons in the network.
+ */
     size_t size() const {return neurons.size();}
 /*! 
   Calculates the number and total intensity of connections to neuron \p n.
   \param n : the index of the receiving neuron.
   \return a pair {number of connections, sum of link intensities}.
  */
-    std::pair<size_t, double> degree(const size_t&) const;
-    const Neuron& neuron(const size_t n) const {return neurons.at(n);}
+    std::pair<size_t, double> degree(const size_t&) const; // a faire fait
+/*!
+  Returns the neuron at position \p n.
+  \param n : position of the neuron in the network.
+  \return neuron at position \p n. 
+  */
+    const Neuron& neuron(const size_t n) const {return neurons.at(n);} 
 /*! 
   Finds the list of neurons with incoming connections to \p n.
   \param n : the index of the receiving neuron.
   \return a vector of pairs {neuron index, link intensity}.
  */
-    std::vector<std::pair<size_t, double> > neighbors(const size_t&) const;
+    std::vector<std::pair<size_t, double> > neighbors(const size_t&) const; // a faire fait
+/*!
+  Finds the list of membrane potentials of the neurons in the network.
+  \return a vector of membrane potentials.
+ */
     std::vector<double> potentials() const;
+/*!
+  Finds the list of recovery variables of the neurons in the network. 
+  \return a vector of recovery variables.
+ */
     std::vector<double> recoveries() const;
 /*! 
   Performs one time-step of the simulation.
   \param input : a vector of random values as thalamic input, one value for each neuron. The variance of these values corresponds to excitatory neurons.
   \return the indices of firing neurons.
  */
-    std::set<size_t> step(const std::vector<double>&);
+    std::set<size_t> step(const std::vector<double>&); // a faire
+/*!
+  Prints the parameters of all the neurons in the network. 
+  \param _out : an output stream.
+ */ 
     void print_params(std::ostream *_out=&std::cout);
+/*!
+  Prints the full state of one neuron of each type. 
+  \param time (const int): time.
+  \param _nt : a map {neuron type, corresponding counts}.
+  \param _out : an output stream.
+ */
     void print_traj(const int, const std::map<std::string, size_t>&, 
                     std::ostream *_out=&std::cout);
+/*!
+  Prints a header line with the variable names for the \ref print_traj lines.
+  \param _nt : a map {neuron type, corresponding counts}.
+  \param _out : an output stream.
+ */    
     void print_head(const std::map<std::string, size_t>&, 
                     std::ostream *_out=&std::cout);
 
 private:
+/*! @name "set" of neurons
+ \p neurons 
+ */
     std::vector<Neuron> neurons;
+/*! @name "set" of directional links between the neurons in the network
+ \p links
+ */
     linkmap links;
 
 };
+
+#endif

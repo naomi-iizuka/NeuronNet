@@ -1,10 +1,12 @@
+#ifndef RANDOM_H
+#define RANDOM_H
+
 #include <random>
 #include <vector>
 #include <algorithm>
 
 /*! \class RandomNumbers
   This is a random number class based on standard c++-11 generators.
-
   This headers declares the global variable \ref main.cpp "_RNG", a pointer to the unique instance of this class.
  */
 
@@ -13,7 +15,6 @@ class RandomNumbers {
 public:
 /*! @name Initializing
   The generator \ref rng is a Mersenne twister *mt19937* engine. 
-
   A seed *s>0* can be provided, by default it is seeded with a *random_device*.
  */
 ///@{
@@ -24,11 +25,10 @@ public:
   These functions either return a single number 
   or fill a given vector with random numbers distributed 
   according the specified distributions. 
-
   The additional parameters are the standard parameters of these distributions.
  */
 ///@{
-    void uniform_double(std::vector<double>&, double lower=0, double upper=1);
+    void uniform_double(std::vector<double>&, double lower=0, double upper=1); //ajouter un nom au vecteur??
     double uniform_double(double lower=0, double upper=1);
     void normal(std::vector<double>&, double mean=0, double sd=1);
     double normal(double mean=0, double sd=1);
@@ -49,3 +49,5 @@ private:
 };
 
 extern RandomNumbers* _RNG;
+
+#endif
